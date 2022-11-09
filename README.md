@@ -28,8 +28,11 @@ Acquire data from codeup database
 
 
 -Drop duplicate columns
+
 -Codify variables as numbers if they aren’t already
+
 -Make dollar amounts into floats
+
 -Clear whitespace and null values
 
 
@@ -37,10 +40,15 @@ Acquire data from codeup database
 
 
 Answer these initial questions:
+
 -Do customers with more or less expensive Total bills maintain their accounts for longer periods of time?
+
 -Does payment type have any kind of correlation to what services a customer has?
+
 -What contract type has the most churn?
+
 -Does internet service type correlate to churn likelihood?
+
 -Does a customer’s monthly bill (not total charges) affect churn likelihood?
 
 
@@ -56,42 +64,61 @@ Evaluate the chosen model on test data
 *Data Dictionary - Term*         Definition
 -Gender
 Male or Female, codified as 0 and 1 respectively
+
 -Senior Citizen
 Whether or not a customer is 65 years old, 0 = No, 1 = Yes
+
 -Partner
 If a customer has a partner living with them, 0 = No, 1 = Yes
+
 -Dependents
 If a customer has dependents living with them, 0 = No, 1 = Yes
+
 -Tenure
 The length of time in months a customer has been with Telco
+
 -Phone Service
 If a customer has phone service, 0 = No, 1 = Yes
+
 -Multiple Lines
 If a customer has multiple phone lines, 0 = No, 1 = Yes
+
 -Online Security
 If a customer has paid Online Security service through Telco, 0 = No, 1 = Yes
+
 -Online Backup
 If a customer has paid Online Backup service through Telco, 0 = No, 1 = Yes
+
 -Device Protection
 If a customer has paid Device Protection service through Telco, 0 = No, 1 = Yes
+
 -Tech Support
 If a customer has paid Tech Support service through Telco, 0 = No, 1 = Yes
+
 -Streaming TV
 If a customer has Streaming TV service, 0 = No, 1 = Yes
+
 -Streaming Movies
 If a customer has Streaming Movie service, 0 = No, 1 = Yes
+
 -Paperless Billing
 If a customer has signed up for Paperless Billing, 0 = No, 1 = Yes
+
 -Monthly Charges
 The Monthly bill a customer receives in dollars
+
 -Total Charges
 The Total Charges in dollars a customer has paid while they have been a Telco customer
+
 -Churn
 Whether or not a customer is still with Telco
+
 -Contract Type
 Month-to-Month, One Year, Two Year contracts codified as 0, 1, 2 respectively
+
 -Internet Service Type
 No internet, FiberOptic, DSL, codified as 0, 1, 2 respectively
+
 -Payment Type
 Mailed check, Electronic Check, Bank Transfer (automatic), Credit Card (automatic)
 Codified as 0, 1, 2, 3 respectively
