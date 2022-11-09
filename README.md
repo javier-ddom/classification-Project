@@ -1,11 +1,11 @@
 Telco Churn Drivers
 
-#*Project Description*
+**Project Description**
 
 
 The Telco dataset was initially created by IBM so that individuals and other interested parties could have a somewhat realistic dataset to practice data analysis on. The customers each have different characteristics which include things like whether or not they’re a senior citizen, have a partner or dependents, how they pay their bill, what services they have and whether or not they have churned (if they are still a customer or have left).
 
-*Project Goal*
+**Project Goal**
 
 
 Discover drivers of customer churn in the Telco dataset
