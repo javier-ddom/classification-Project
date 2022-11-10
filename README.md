@@ -127,7 +127,7 @@ Codified as 0, 1, 2, 3 respectively
 
 ###**Steps to Reproduce**###
 
-1.Clone this Reposition: Presentation and Acquire should be the only needed files
+1.Clone this Reposition: Presentation, Acquire, and env should be the only needed files
 2.Make sure the files are in the same location and run the presentation notebook
 3.Profit?
 
