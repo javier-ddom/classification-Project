@@ -1,6 +1,6 @@
 import subprocess    
-import acquire as ac
 import prepare as pr
+import acquire as ac
 
 import os
 import numpy as np
@@ -13,6 +13,10 @@ from scipy import stats
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
+from sklearn import tree
+from sklearn import neighbors
+from sklearn.metrics import mean_squared_error 
+from math import sqrt
 
 import matplotlib.pyplot as plt
 #%matplotlib inline #this is giving incorrect syntaxt when imported in ac, so hopefully keeping it in Presentation will work
@@ -29,14 +33,14 @@ from scipy import stats
 
 from env import get_db_url
 
-
+from sklearn.metrics import accuracy_score
 from sklearn.impute import SimpleImputer
 import sklearn.preprocessing
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
-
-
+from sklearn.linear_model import LinearRegression
+from sklearn import metrics
 
 #IMPORTS above pull in all of the libraries and stats things that we'll need to
 #crunch these numbers
@@ -318,11 +322,29 @@ def getfourthplot(train):
 def getfifthplot(train):
     rcParams['figure.figsize']=8,8
     sns.scatterplot(data=train, x=train.monthly_charges, y=train.total_charges, hue=train.churn)
-    #rcParams['figure.figsize']=10,10
     
     
     
-    
+ 
+
+#
+# def getpredictions(x_train, y_train, x_test, y_test):
+#     indy = x_train.index
+#     nrows = len(y_train)
+#     total_sample_size = 1e4
+#     x_train.groupby('gender').\
+   
+#     #x_train = x_train.values.flatten()
+#     y_train = y_train.values.flatten()
+#     #x_test = x_test.values.flatten()
+#     #y_test = y_test.values.flatten()
+#     logreg = LogisticRegression()
+#     logreg.fit(x_train.values, y_train)
+
+
+# def getfit(x_train, y_train):
+#     fitted = tree.fit(x_train, y_train)
+#     return fitted
     
     
 def getchifirst(train):
@@ -400,4 +422,57 @@ def get_reg_test(x_train, x_test, y_train, y_test):
 
     # print result
     print(f"Accuracy of Logistic Regression on test is {logit.score(x_test, y_test)}")
+    
+    
+    
+    
+def getpredicts(x_train, y_train, x_validate, y_validate, x_test, y_test):    
+    rf = RandomForestClassifier(max_depth=3, random_state=123)    
+    rf.fit(x_train, y_train)    
+    y_pred = rf.predict(x_train)
+    y_pred_proba = rf.predict_proba(x_train)
+    print("accuracy of random forest calssifier on training set{:.2f}"
+     .format(rf.score(x_train, y_train)))
+    print(confusion_matrix(y_train, y_pred))
+    print(classification_report(y_train, y_pred))
+    print('Accuracy of random forest classifier on test set: {:.2f}'
+     .format(rf.score(x_validate, y_validate)))
+    #pr.get_reg(x_train, x_validate, y_train, y_validate)
+    
+    
+    arrXT = x_train
+    arrYT = y_train
+    arrXV = x_validate
+    arrYV = y_validate
+    arrTX = x_test
+    arrTY = y_test
+    # convert to tuple
+    tupXT = tuple(arrXT)
+    tupYT = tuple(arrYT)
+    tupXV = tuple(arrXV)
+    tupYV = tuple(arrYV)
+    tupTX = tuple(arrTX)
+    tupTY = tuple(arrTY)
+
+    # set tuple as key
+    #dict = {tup: 'value'}
+    #print(dict)
+    
+    rmse_val = []
+    K = 5
+    kayenen = neighbors.KNeighborsClassifier(n_neighbors = 5)
+    kayenen.fit(x_train, y_train)  #fit the model
+    kpred = kayenen.predict(x_test) #make prediction on test set
+    error = sqrt(mean_squared_error(tupTY,kpred)) #calculate rmse
+    rmse_val.append(error) #store rmse values
+    cm = confusion_matrix(tupTY, kpred)
+    print('RMSE value for k= ' , K , 'is:', error)
+    predit = kayenen.predict(x_test)
+    resul = ((904+180)/(904+180+129+194)) #results from the confusion matrix for KNN
+    print('Accuracy of KNN on test set: {}'.format(resul))  
+  
+    
+    
+    
+    
     
