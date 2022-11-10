@@ -15,9 +15,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 
 import matplotlib.pyplot as plt
-#%matplotlib inline
+#%matplotlib inline #this is giving incorrect syntaxt when imported in ac, so hopefully keeping it in Presentation will work
 import seaborn as sns
 from matplotlib import rcParams
+import matplotlib
 
 # ignore warnings
 import warnings
@@ -25,151 +26,23 @@ warnings.filterwarnings("ignore")
 import pandas as pd
 import numpy as np
 from scipy import stats
-import os
-from env import get_db_url
 
-# def get_db_url(db):
-#     return f'mysql+pymysql://{user}:{password}@{host}/{db}'
-
-
-def new_titanic_data():
-    '''
-    This function reads the titanic data from the Codeup db into a df.
-    '''
-    # Create SQL query.
-    sql_query = 'SELECT * FROM passengers'
-    
-    # Read in DataFrame from Codeup db.
-    df = pd.read_sql(sql_query, get_db_url('titanic_db'))
-    
-    return df
-
-def get_titanic_data():
-    '''
-    This function reads in titanic data from Codeup database, writes data to
-    a csv file if a local file does not exist, and returns a df.
-    '''
-    if os.path.isfile('titanic_df.csv'):
-        
-        # If csv file exists, read in data from csv file.
-        df = pd.read_csv('titanic_df.csv', index_col=0)
-        
-    else:
-        
-        # Read fresh data from db into a DataFrame.
-        df = new_titanic_data()
-        
-        # Write DataFrame to a csv file.
-        df.to_csv('titanic_df.csv')
-        
-    return df
-
-def new_iris_data():
-    '''
-    This function reads the iris data from the Codeup db into a df.
-    '''
-    sql_query = """
-                SELECT 
-                    species_id,
-                    species_name,
-                    sepal_length,
-                    sepal_width,
-                    petal_length,
-                    petal_width
-                FROM measurements
-                JOIN species USING(species_id)
-                """
-    
-    # Read in DataFrame from Codeup db.
-    df = pd.read_sql(sql_query, get_db_url('iris_db'))
-    
-    return df
-
-def get_iris_data():
-    '''
-    This function reads in iris data from Codeup database, writes data to
-    a csv file if a local file does not exist, and returns a df.
-    '''
-    if os.path.isfile('iris_df.csv'):
-        
-        # If csv file exists read in data from csv file.
-        df = pd.read_csv('iris_df.csv', index_col=0)
-        
-    else:
-        
-        # Read fresh data from db into a DataFrame
-        df = new_iris_data()
-        
-        # Cache data
-        df.to_csv('iris_df.csv')
-        
-    return df
-
-def new_telco_data():
-    '''
-    This function reads the telco data from the Codeup db into a df.
-    '''
-    sql_query = """
-                select * from customers
-                join contract_types using (contract_type_id)
-                join internet_service_types using (internet_service_type_id)
-                join payment_types using (payment_type_id)
-                """
-    
-    # Read in DataFrame from Codeup db.
-    df = pd.read_sql(sql_query, get_db_url('telco_churn'))
-    
-    return df
-
-def get_telco_data():
-    '''
-    This function reads in telco data from Codeup database, writes data to
-    a csv file if a local file does not exist, and returns a df.
-    '''
-    if os.path.isfile('telco.csv'):
-        
-        # If csv file exists read in data from csv file.
-        df = pd.read_csv('telco.csv', index_col=0)
-        
-    else:
-        
-        # Read fresh data from db into a DataFrame
-        df = new_telco_data()
-        
-        # Cache data
-        df.to_csv('telco.csv')
-        
-    return df
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import pandas as pd
-import numpy as np
-import os
 from env import get_db_url
 
 
-from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 import sklearn.preprocessing
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
-import pandas as pd
 
-#########################ACQUIRE   ACQUIRE    ACQUIRE#######################################
+
+
+#IMPORTS above pull in all of the libraries and stats things that we'll need to
+#crunch these numbers
+
+
+#We begin acquiring data below \/ \/ \/
 
 def new_telco_data():
     '''
@@ -186,6 +59,8 @@ def new_telco_data():
     df = pd.read_sql(sql_query, get_db_url('telco_churn'))
     
     return df
+
+
 
 def get_telco_data():
     '''
@@ -206,6 +81,8 @@ def get_telco_data():
         df.to_csv('telco.csv')
         
     return df
+
+
 
 
 ######################PREPARE   PREPARE     PREPARE#######################################
@@ -247,8 +124,17 @@ def prep_telco_data(df):
     # Convert to correct datatype
     df['total_charges'] = df.total_charges.astype(float)
 
+    #trying to drop nulls if any in monthly charges
+    df['monthly_charges'] = df['monthly_charges'].str.strip()
+    df = df[df.total_charges != '']
+    
+    #converted to float
+    df['monthly_charges'] = df.total_charges.astype(float)
+    
+    
 #I was getting something out of place so I split them out differently
-
+#Each line replaces the values which aren't numbers, with numbers so they can be
+#processed/analyzed
 
     df['gender'].replace(['Female', 'Male'],[1,0], inplace=True)
     df['contract_type'].replace(['Two year', 'One year', 'Month-to-month'],[2,1,0], inplace=True)
@@ -266,7 +152,7 @@ def prep_telco_data(df):
     df['streaming_tv'].replace(['Yes', 'No','No internet service'],[1,0,00], inplace=True)	
     df['streaming_movies'].replace(['Yes', 'No','No internet service'],[1,0,00], inplace=True)	
 
-    df['monthly_charges'].replace(['Yes', 'No'],[1,0], inplace=True)	
+  # df['monthly_charges'].replace(['Yes', 'No'],[1,0], inplace=True)	
     df['internet_service_type'].replace(['DSL', 'Fiber optic','None'],[2,1,0], inplace=True)	
     df['payment_type'].replace(['Mailed check', 'Electronic check', "Bank transfer (automatic)", "Credit card (automatic)" ],[0,1,2,3], inplace=True)	
 
@@ -295,7 +181,7 @@ def prep_telco_data(df):
     return df 
 ######################################################
 
-
+#This creates a decision tree classifier and runs the math for our training data
 
 def get_tree(x_train, x_validate, y_train, y_validate):
     '''get decision tree accuracy on train and validate data'''
@@ -311,6 +197,7 @@ def get_tree(x_train, x_validate, y_train, y_validate):
     print(f"Accuracy of Decision Tree on validate data is {clf.score(x_validate, y_validate)}")
     
 
+#This creates a random forest classifier and runs the math for our training data
 
 def get_forest(train_X, validate_X, train_y, validate_y):
     '''get random forest accuracy on train and validate data'''
@@ -323,6 +210,7 @@ def get_forest(train_X, validate_X, train_y, validate_y):
     print(f"Accuracy of Random Forest on train is {rf.score(train_X, train_y)}")
     print(f"Accuracy of Random Forest on validate is {rf.score(validate_X, validate_y)}")
 
+#This creates a  KNN classifier and runs the math for our training data
 
 def get_knn(x_train, x_validate, y_train, y_validate):
     '''get KNN accuracy on train and validate data'''
@@ -335,6 +223,7 @@ def get_knn(x_train, x_validate, y_train, y_validate):
     print(f"Accuracy of KNN on train is {knn.score(x_train, y_train)}")
     print(f"Accuracy of KNN on validate is {knn.score(x_validate, y_validate)}")
 
+#This creates a linear regression classifier and runs the math for our training data
     
 def get_reg(x_train, x_validate, y_train, y_validate):
     '''get logistic regression accuracy on train and validate data'''
@@ -348,64 +237,90 @@ def get_reg(x_train, x_validate, y_train, y_validate):
     print(f"Accuracy of Logistic Regression on validate is {logit.score(x_validate, y_validate)}")
 
 
-#expected values of churn X internet service type, manually calculated for chi2
-#169.148420	467.501818
-#335.956461	928.535138
-#262.990454	726.867709
-#EXPECTED VALUES manually calculated, already multiplied by N
+# #expected values of churn X internet service type, manually calculated for chi2
+# #169.148420	467.501818
+# #335.956461	928.535138
+# #262.990454	726.867709
+# #EXPECTED VALUES manually calculated, already multiplied by N
 
 
-def chi2ISTchurn(train):
+# def chi2ISTchurn(train):
     
-    index = ['No Churn', 'Churn']
-    columns = ['No Svc', 'DSL', 'FiberOp']
+#     index = ['No Churn', 'Churn']
+#     columns = ['No Svc', 'DSL', 'FiberOp']
 
-    observed = pd.DataFrame([[803, 987, 1101], [64, 735, 247]], index=index, columns=columns)
-    n = train.shape[0]
+#     observed = pd.DataFrame([[803, 987, 1101], [64, 735, 247]], index=index, columns=columns)
+#     n = train.shape[0]
 
-    expected = pd.DataFrame([[169.148, 335.956, 262.99], [467.5, 928.535, 726.867]], index=index, columns=columns)
+#     expected = pd.DataFrame([[169.148, 335.956, 262.99], [467.5, 928.535, 726.867]], index=index, columns=columns)
 
-    chi2 = ((observed - expected)**2 / expected).values.sum()
+#     chi2 = ((observed - expected)**2 / expected).values.sum()
 
 
-    degrees_of_freedom = 2  #(2-1)(3-1)=2
+#     degrees_of_freedom = 2  #(2-1)(3-1)=2
 
-    p = stats.chi2(degrees_of_freedom).sf(chi2)
+#     p = stats.chi2(degrees_of_freedom).sf(chi2)
 
-    print('Observed')
-    print(observed)
-    print('---\nExpected')
-    print(expected)
-    print('---\n')
-    print(f'chi^2 = {chi2:.4f}')
-    print(f'p     = {p:.4f}')
+#     print('Observed')
+#     print(observed)
+#     print('---\nExpected')
+#     print(expected)
+#     print('---\n')
+#     print(f'chi^2 = {chi2:.4f}')
+#     print(f'p     = {p:.4f}')
     
     
     
     
     #this code gets us a scatter plot showing total charges, tenure, and churn status
 def getfirstplot(train):
+    rcParams['figure.figsize']=10,10
     sns.scatterplot(train.tenure,train.total_charges, hue=train.churn) 
-    rcParams['figure.figsize']=10,10  #may need to run it a few times to get the correct figsize
+    #rcParams['figure.figsize']=10,10  #may need to run it a few times to get the correct figsize
     
     
+    
+    
+    
+    #this code gets us a  plot showing payment type, tenure, and internet svc type
 def getsecondplot(train):
-    PTT = sns.scatterplot(train.payment_type, train.tenure,        hue=train.internet_service_type, )
-    PTT.legend(loc='center left', bbox_to_anchor=(1, 0.5), ncol=1)
-    rcParams['figure.figsize']=8,10  #may need to run it twice to get the correct figsize    
+    rcParams['figure.figsize']=8,8  
+    PTT = sns.scatterplot(train.payment_type, train.tenure,        hue=train.internet_service_type, palette='bright')
+    PTT.legend(loc='center left', bbox_to_anchor=(1, 0.5), ncol=1,labels=['No Svc', 'FiberOp','DSL'])
+    PTT.set(xlabel='Mailed Check - 0           Electronic Check - 1           Bank Draft (auto) - 2           Credit Card (auto) - 3')
         
         
+        
+        
+#this code gets us a scatter plot contract type, tenure, and churn status       
 def getthirdplot(train):
-    sns.relplot(x=train.total_charges, y=train.contract_type,size=train.tenure, hue=train.churn, height=3, aspect=4)
+    TD = sns.relplot(x=train.total_charges, y=train.contract_type,size=train.tenure, hue=train.churn, height=4, aspect=3)
+    TD.set(ylabel='Monthly   |   One-Year   |   Two-Year')
     
     
     
+    
+    
+#this code gets us a scatter plot showing internet svc type, tenure, and total charges vs churn  
 def getfourthplot(train):
-    sns.relplot(data=train, col=train.internet_service_type, x=train.tenure, y=train.total_charges, hue=train.churn)
-    rcParams['figure.figsize']=8,10  
+    #rcParams['figure.figsize']=30,30
+    INTC = sns.relplot(data=train, col=train.internet_service_type, x=train.tenure, y=train.total_charges, hue=train.churn, height = 5, aspect = 1)  
+    INTC.set_titles('')
+    INTC.fig.suptitle("0-None                                                                    1-FiberOptic                                                                    2-DSL")
+    INTC.fig.subplots_adjust(top=1)
+    #I couldn't find a real way to change what would've been the {col_name} variable within the plot's available documentation
+    #The most simple way is to make an overall title and space out manually; what I ended up with to label each plt
         
+        
+    
+    
+#this code gets us a scatter plot showing monthly charge, total, and churn status      
 def getfifthplot(train):
-    sns.displot(data=train, col=train.contract_type, x=train.tenure, y=train.total_charges, hue=train.churn)
+    rcParams['figure.figsize']=8,8
+    sns.scatterplot(data=train, x=train.monthly_charges, y=train.total_charges, hue=train.churn)
+    #rcParams['figure.figsize']=10,10
+    
+    
     
     
     
@@ -459,8 +374,15 @@ def getchifourth(train):
     print(f'chi^2 = {chi2:.4f}')
     print(f'p     = {p:.4f}')  
     
-#def getchififth(train):
-    
+def getchififth(train):
+    '''get rusults of chi-square for monthly charges and churn status'''
+
+    observed = pd.crosstab(train.monthly_charges, train.churn)
+
+    chi2, p, degf, expected = stats.chi2_contingency(observed)
+
+    print(f'chi^2 = {chi2:.4f}')
+    print(f'p     = {p:.4f}')  
     
 
     
