@@ -66,8 +66,7 @@ Evaluate the chosen model on test data
 
 ###**Data Dictionary - Term**         *Definition*###
 
--Gender.    
-Male or Female, codified as 0 and 1 respectively
+-Gender. Male or Female, codified as 0 and 1 respectively
 
 -Senior Citizen. 
 Whether or not a customer is 65 years old, 0 = No, 1 = Yes
